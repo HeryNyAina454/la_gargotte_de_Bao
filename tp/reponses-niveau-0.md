@@ -90,4 +90,22 @@ curl -X POST http://localhost:8080/api/commandes \
         }
         ]
     }'
+
+# Suivi de requête
+| # | Étape | Fichier | Fonction / ligne |
+|---|---|---|---|
+| 1 | Le formulaire est soumis | `components/PlatForm.vue` | `enregistrer()` |
+| 2 | La requête `POST /api/plats` est construite et envoyée | `src/api.js` | `api.plats.creer()` puis `requete()` |
+| 3 | Vite transmet `/api/...` au port 8080 | `vite.config.js` | `server.proxy['/api']` |
+| 4 | CodeIgniter associe `POST /api/plats` au contrôleur | `backend/app/Config/Routes.php` | `Plats::create` |
+| 5 | Le contrôleur lit le corps JSON | `backend/app/Controllers/Api/Plats.php` et `ApiController.php` | `create()` puis `donneesJson()` |
+| 6 | Les règles de validation sont vérifiées | `backend/app/Models/PlatModel.php` | `$validationRules`, lors de `insert()` |
+| 7 | La ligne est insérée dans la base de données et le plat créé est renvoyé | `backend/app/Controllers/Api/Plats.php` | `create()` |
+| 8 | Le formulaire transmet le résultat à l’écran parent | `components/PlatForm.vue` | `emit('enregistre', resultat)` |
+| 9 | L’écran affiche le succès et recharge la liste des plats | `views/CarteView.vue` | `surEnregistrement()` puis `charger()` |
+
+## 8.
+Le code métier de la création d’une commande se trouve dans `backend/app/Services/CommandeService.php`, dans la méthode `creer()`
+Il n’est pas dans `Commandes.php` parce que le contrôleur a pour rôle de gérer la requête HTTP et la réponse : il lit le JSON, appelle le service, transforme une `RegleMetierException` en réponse d’erreur et renvoie la commande créée. 
+
         
