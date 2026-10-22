@@ -78,8 +78,8 @@ Pour la requête d, c'est PostgreSQL qui bloque la suppression à cause de la cl
 
 ## 7.
 curl -X POST http://localhost:8080/api/commandes \
-  -H "Content-Type: application/json" \
-  -d '{"numero_table": 6, "lignes": [
+    -H "Content-Type: application/json" \
+    -d '{"numero_table": 6, "lignes": [
         {
             "id_plat": 4,
             "quantité": 2
