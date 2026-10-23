@@ -133,3 +133,6 @@ Il n’est pas dans `Commandes.php` parce que le contrôleur a pour rôle de gé
 
 ## 10.
 Le `watch` dans `PlatForm.vue` surveille les changements de la prop `plat` et actualise les champs du formulaire pour afficher les données du plat sélectionné. Sans lui, les anciennes informations resteraient affichées.
+
+## 11.
+La liste déroulante de `PlatForm.vue` récupère les catégories via l’API `/api/categories`, définie dans `Routes.php` et gérée par `Categories.php`. Les données sont stockées dans une variable réactive pour afficher automatiquement les catégories dans le formulaire.
