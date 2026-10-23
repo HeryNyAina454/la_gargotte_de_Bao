@@ -37,15 +37,17 @@ Code: 200 OK
 
 ### b)
 Code: 201 Created
-{
-    "id": 12,
-    "nom": "Mofo gasy",
-    "prix": 300,
-    "id_categorie": 1
-}
+
+    {
+        "id": 12,
+        "nom": "Mofo gasy",
+        "prix": 300,
+        "id_categorie": 1
+    }
 
 ### c)
 Code: 422 Unprocessable Content
+    
     {
     "message": "Données invalides.",
     "errors": {
@@ -57,17 +59,19 @@ Code: 422 Unprocessable Content
 
 ### d)
 Code: 409 Conflict
-{
-    "message": "Ce plat figure déjà dans des commandes, il ne peut pas être supprimé.",
-    "errors": {}
-}
+
+    {
+        "message": "Ce plat figure déjà dans des commandes, il ne peut pas être supprimé.",
+        "errors": {}
+    }
 
 ### e)
 Code: 404 Not Found
-{
-    "message": "Commande 999 introuvable.",
-    "errors": {}
-}
+
+    {
+        "message": "Commande 999 introuvable.",
+        "errors": {}
+    }
 
 ## 5.
 Pour la requête b, le code obtenu est 201 mais pas 200 car on procède à une création.
@@ -108,4 +112,24 @@ curl -X POST http://localhost:8080/api/commandes \
 Le code métier de la création d’une commande se trouve dans `backend/app/Services/CommandeService.php`, dans la méthode `creer()`
 Il n’est pas dans `Commandes.php` parce que le contrôleur a pour rôle de gérer la requête HTTP et la réponse : il lit le JSON, appelle le service, transforme une `RegleMetierException` en réponse d’erreur et renvoie la commande créée. 
 
-        
+# Notions de vue
+
+## 0.5 Repérer les notions de Vue
+
+| Notion                 | À quoi ça sert                                                    | Votre exemple                                                                                                                                                                                                                            |
+|------------------------|-------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `ref()`                | une variable dont le changement met l’écran à jour                | frontend/src/views/CommandeView.vue:7-17<br/> const plats = ref([]) et const numeroTable = ref('') : ce sont des variables réactives, donc tout changement les met automatiquement à jour dans l’écran.                                  |
+| `computed()`           | une valeur calculée à partir d’autres, recalculée automatiquement | frontend/src/App.vue:14-15<br/>const vueCourante = computed(() => onglets.find((o) => o.id === ongletActif.value).composant) : c’est une valeur calculée à partir d’autres données, recalculée automatiquement quand celles-ci changent. |
+| `v-for`                | répéter un élément pour chaque élément d’une liste                | frontend/src/App.vue:26-3<br/><button v-for="onglet in onglets" ...> : Vue répète le bloc pour chaque élément de la liste onglets.                                                                                                       |
+| `v-if` / `v-else`      | afficher un élément seulement si une condition est vraie          | frontend/src/views/HistoriqueView.vue:23-49<br/> l’élément s’affiche seulement si la condition est vraie, sinon on affiche l’autre.                                                                                                      |
+| `v-model`              | lier un champ de formulaire à une variable, dans les deux sens    | frontend/src/views/CommandeView.vue:72-75<br/> <input v-model.number="numeroTable" ... /> : le champ de formulaire et la variable numeroTable sont liés dans les deux sens.                                                              |
+| `defineProps`          | recevoir des données du composant parent                          | frontend/src/components/PlatList.vue:6-8<br/> const props = defineProps({ plats: { type: Array, required: true } }) : le composant reçoit des données du parent via les props.                                                           |
+| `defineEmits` / `emit` | envoyer un événement au composant parent                          | frontend/src/components/PlatList.vue:10-11 et 28-29<br/> const emit = defineEmits(['modifier', 'supprimer']) puis @click="emit('modifier', plat)" : le composant envoie un événement au parent pour lui demander une action.             |
+| `onMounted`            | exécuter du code quand le composant apparaît                      | frontend/src/views/HistoriqueView.vue:10-12<br/> onMounted(async () => { commandes.value = await api.commandes.lister() }) : le code s’exécute quand le composant est affiché pour la première fois.                                     
+
+
+## 9.
+`Panier.vue` émet les événements `plus` et `moins` pour demander au composant parent de modifier les quantités. Le parent gère l’état global de la commande, garantissant ainsi la cohérence des données.
+
+## 10.
+Le `watch` dans `PlatForm.vue` surveille les changements de la prop `plat` et actualise les champs du formulaire pour afficher les données du plat sélectionné. Sans lui, les anciennes informations resteraient affichées.
